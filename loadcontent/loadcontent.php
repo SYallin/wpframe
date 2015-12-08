@@ -1,15 +1,25 @@
 <?php
 /*
- * 
+ * Load content 
  */
 
 
-class LoadContent extends Core{
+//use lib/RegisterPostType;
+
+class LoadContent{
+    
+    use CheckRequiredClassesTrait;
 
     private $posttype;
     private $posttype_slug;
     private $default_post_data;
+    
+    public static $required_classes = array(
+                                      'RequiredPlugins',
+                                      );
+    
     public $textdomain;
+    public $cron_enable = false;
     public $plugin = array(
              'name'                 => 'Advanced Custom Fields Pro', // The plugin name
              'slug'                 => 'advanced-custom-fields-pro', // The plugin slug (typically the folder name)
@@ -22,13 +32,16 @@ class LoadContent extends Core{
     
     function __construct( $post_type ){
         $this->set_post_type( $post_type );
-        $this->textdomain = $this->get_textdomain();
+
+        self::check_required_classes( self::$required_classes );
+        
+        $this->textdomain = wp_get_theme()->get( 'TextDomain' );
         add_action( 'init', array( $this, 'init' ) ); 
     }
     
     function init(){
         if( $this->setup_acfpro() ){
-            $this->register_post_type( $this->posttype );
+            new RegisterPostType( $this->posttype );
             $this->set_cron();
         }
     }
@@ -101,9 +114,10 @@ class LoadContent extends Core{
     }
 
     function get_external_data(){
+        // demo data
         $data = array(
                     array(
-                        'post_title'    => 'My post',
+                        'post_title'    => 'My post4',
                         'post_content'  => 'This is my post.',
                      ),
                     array(
@@ -118,7 +132,7 @@ class LoadContent extends Core{
         return $data;
     }
     
-    function update_posts( $data ){
+    function update_posts(){
         foreach( $this->get_external_data() as $post ){
             if( !get_page_by_title( $post['post_title'], OBJECT, $this->posttype_slug ) ){
                 $this->insert_post( $post );
@@ -127,9 +141,13 @@ class LoadContent extends Core{
     }
     
     function set_cron(){
-        if( !wp_next_scheduled( $this->posttype_slug . '_loadcontent_update_posts' ) ) { 
-            wp_schedule_event( time(), get_field( 'twitt_update_time', 'option' ), $this->posttype_slug . '_loadcontent_update_posts' );
+        if( $this->cron_enable ){
+            if( !wp_next_scheduled( $this->posttype_slug . '_loadcontent_update_posts' ) ) { 
+                wp_schedule_event( time(), get_field( 'twitt_update_time', 'option' ), $this->posttype_slug . '_loadcontent_update_posts' );
+            }
+            add_action( $this->posttype_slug . '_loadcontent_update_posts', array( $this, 'update_posts' ) );
+        }else{
+            $this->update_posts();
         }
-        add_action( $this->posttype_slug . '_loadcontent_update_posts', array( $this, 'update_posts' ) );
     }
 }

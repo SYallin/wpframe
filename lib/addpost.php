@@ -7,7 +7,7 @@
  *
  */
 
-class AddPost extends AddItem{
+class AddPost{
 
     protected $default_data = array();
     protected $name;    
@@ -84,5 +84,9 @@ class AddPost extends AddItem{
         set_post_thumbnail( $item_id, $data );
     }
     
-    
+    public function update_meta_values( array $fields, $item_id  ){
+        foreach( $fields as $field_name => $value ){
+            $this->update_meta( $item_id, $field_name, $value );
+        }
+    }      
 }

@@ -1,16 +1,24 @@
 <?php
 class RequiredPlugins{
     
-    var $config;
-    var $plugins = array();
+	use CheckRequiredClassesTrait;	
+	
+    public $config;
+    public $plugins = array();
+	
+    public static $required_classes = array(
+                                      'TGM_Plugin_Activation',
+                                      );	
     
     function __construct(){
-        require 'class-tgm-plugin-activation.php';
+        require 'TGM_Plugin_Activation.php';
+		
+		self::check_required_classes( self::$required_classes );
     }
     
     function init(){
         
-        $theme_text_domain = $this->get_textdomain();
+        $theme_text_domain = wp_get_theme()->get( 'TextDomain' );
         $config = array(
             'domain'       => $theme_text_domain,         // Text domain - likely want to be the same as your theme.
             'default_path' => '',                         // Default absolute path to pre-packaged plugins
@@ -61,11 +69,6 @@ class RequiredPlugins{
             $this->plugins[] = $plugin_array;
         }        
     }
-    
-	function get_textdomain(){
-        $theme = wp_get_theme();
-        return ( $theme->get( 'TextDomain' ) );
-	}    
 }
 
 
