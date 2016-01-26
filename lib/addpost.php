@@ -11,9 +11,11 @@ class AddPost{
 
     protected $default_data = array();
     protected $name;    
-    public $taxonomy_append = true;
+    public $taxonomy_append = false;
+    public $attachment_id = 0;
+    public $post_id = 0;
     
-    function __construct( $name, array $data = null ){
+    function __construct( $name = 'post', array $data = null ){
         $this->name = $name;
         $this->set_default_data(
             array(
@@ -22,7 +24,7 @@ class AddPost{
                 'post_author'   => 1,
                 )
         );
-        if( $data ){
+        if( $data  ){
             return $this->insert_item( $data );
         }else{
             return false;
@@ -43,18 +45,18 @@ class AddPost{
     
     public function insert_item( array $data ){
         $data = array_merge( $data, $this->default_data );
-        $item_id = wp_insert_post( $data );
+        $this->post_id = wp_insert_post( $data );
         
         if( $data[ 'meta' ] ){
-            $this->update_meta_values( $data[ 'meta' ], $item_id );
+            $this->update_meta_values( $data[ 'meta' ], $this->post_id );
         }
         
         if( $data[ 'taxonomies' ] ){
-            $this->update_taxonomies( $data[ 'taxonomies' ], $item_id );
+            $this->update_taxonomies( $data[ 'taxonomies' ], $this->post_id );
         }
         
         if( $data[ 'feautured' ] ){
-            $this->set_feautured_image( $data[ 'feautured' ], $item_id  );
+            $this->set_feautured_image( $data[ 'feautured' ], $this->post_id  );
         }        
         
         return $item_id;
@@ -81,7 +83,16 @@ class AddPost{
     }
     
     public function set_feautured_image( $data, $item_id ){
-        set_post_thumbnail( $item_id, $data );
+        if ( $item_id ) {
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            require_once( ABSPATH . 'wp-admin/includes/file.php' );
+            require_once( ABSPATH . 'wp-admin/includes/media.php' );        
+        
+            $this->attachment_id = media_handle_upload( $data, $item_id );
+            set_post_thumbnail( $item_id,  $this->attachment_id );
+        }else{
+            return false;
+        }
     }
     
     public function update_meta_values( array $fields, $item_id  ){
