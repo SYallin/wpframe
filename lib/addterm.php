@@ -16,9 +16,6 @@ class AddTerm {
     
     public function insert_item( $term, $data = null ){
         $item_id = wp_insert_term( $term, $this->taxonomy, $data );
-        
-        
-        
         return $item_id;
     }    
 }

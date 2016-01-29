@@ -1,15 +1,8 @@
 <?php
-/*
- * проверить права пользователя
- * фичеред
- * таксономия
- * acf репитеры 
- *
- */
 
 class UpdatePost extends AddPost{
 
-    protected $id;    
+    public $id;    
     
     function __construct( $id, array $data = null ){
         $this->id = $id;
