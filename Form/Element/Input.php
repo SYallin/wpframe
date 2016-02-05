@@ -1,70 +1,29 @@
 <?php
 
-abstract class Form_Element_Input extends Form_Element_Element{
-
-    /**
-     * Default priority at which validators are added
-     */
-    const DEFAULT_PRIORITY = 1;
+class Form_Element_Input extends Form_Element_Object{
     
-    protected $validators;
-    protected $required = false;
-    protected $options = array();
-    protected $type;
-    protected $placeholder;
-   
-    abstract function render();
-    abstract function renderElement();
-
-    public function addValidator( $validator, $value = false, $priority = self::DEFAULT_PRIORITY ){
-        $this->validators[$priority][] = array( $validator => $value );
-        return $this;
-    }
-    
-    public function setRequired(){
-        $this->required = true;
-        return $this;
-    }
-    
-    public function setMultiOptions( array $options ){
-        $this->options = $options;
-        return $this;
-    }
-    
-    public function setOption( $option ){
-        $this->options = array( 'option' => $option );
-        return $this;
-    }
-    
-    public function isRequired(){
-        return $this->required;
-    }
-    
-    public function getValidators(){
-        return $this->validators;
-    }
+    protected $type = 'text';
     
     public function setType( $type ){
         $this->type = $type;
-        return $this;
     }
     
-    public function getValidatorsJSData(){
-        foreach( $this->validators as $validators ){
-            foreach( $validators as $validator ){
-                $data[] = '"' . key( $validator ) . '": ' . current($validator) . '';
-            }
+    public function render(){
+        $label = '';
+        if( $this->label ){
+            $label = "<label for=\"" . $this->attributes['name'] . "\">" . $this->label ."</label>\n";
         }
-        return ' data-required=\'{' . implode(",", $data) . '}\'';
+        return $label . $this->renderElement();
     }
     
-    public function setPlaceholder( $placeholder ){
-        $this->placeholder = $placeholder;
-        return $this;
+    public function renderElement(){
+        if( $this->value ){
+            $value = 'value="'. $this->value .'" ';
+        }elseif( $this->options && $this->options['option'] ){
+            $value = 'value="' . $this->options['option'] . '" ';
+        }else{
+            $value = 'value="" ';
+        }
+        return '<input '. $this->renderAttributes(). $value . $this->getValidatorsJSData() . '>';
     }
-    
-    public function getPlaceholder(){
-        return $this->placeholder;
-    }      
-    
 }

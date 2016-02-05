@@ -1,6 +1,10 @@
 <?php
 
-class Form_Element_Select extends Form_Element_Input{
+class Form_Element_Select extends Form_Element_Object{
+    
+    protected $attributes = array(
+        'type' => 'radio',
+    );    
     
     public function render(){
         $label_open = '';
@@ -23,6 +27,6 @@ class Form_Element_Select extends Form_Element_Input{
                 $options .= '<option'.$selected.' value="' . $value . '">' . $option . '</option>';
             }
         }
-        return '<select type="radio" '. $this->renderAttributes(). $this->getValidatorsJSData() . '>' . $options . '</select>';        
+        return '<select '. $this->renderAttributes(). $this->getValidatorsJSData() . '>' . $options . '</select>';        
     }
 }

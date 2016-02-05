@@ -12,6 +12,7 @@ class Form extends Form_Element_Element{
     protected $isValid = false;
     protected $validator = false;
     protected $ajaxDataType = 'json';
+    protected $ajaxRequestHandler = 'ajaxRequestHandler';
     
     public function __construct(){
 
@@ -89,6 +90,11 @@ class Form extends Form_Element_Element{
             $ajax = 'data-ajax="enable" data-ajaxtype="' . $this->ajaxDataType . '" ';
         }
         
+        $ajaxRequestHandler = '';
+        if( $this->ajaxRequestHandler ){
+            $ajax .= ' data-ajaxhandler="' . $this->ajaxRequestHandler . '" ';
+        }        
+        
         return 'method="' . $this->method . '" action="' . $this->action . '"  '.$this->renderAttributes() . $ajax;
     }
     
@@ -96,7 +102,10 @@ class Form extends Form_Element_Element{
         $this->ajax = $ajax;
         return $this;
     }
-    
+    public function ajaxRequestHandler( $ajaxRequestHandler ){
+        $this->ajaxRequestHandler = $ajaxRequestHandler;
+        return $this;
+    }    
     
     
 }
