@@ -210,7 +210,6 @@ if (!class_exists('Image_View')){
 						),
 					);
 				}
-				$img_id = $img['id'];
 				$alt = (!empty($this->image['alt'])) ? $this->image['alt'] : $this->image['title'];
 
 
@@ -231,7 +230,7 @@ if (!class_exists('Image_View')){
 				$large_media = '';
 				$src = (!empty($this->image['sizes'][$this->size])) ? $this->image['sizes'][$this->size] : $this->image['url'];
 
-				$html .= "<picture" . $args_text . ">\n";
+				$html .= "<picture>\n";
 				$html .= "<!--[if IE 9]><video style=\"display: none;\"><![endif]-->\n";
 				foreach($picture_arg as $s){
 					if ($s['size'] && $s['size2x']){
@@ -246,7 +245,7 @@ if (!class_exists('Image_View')){
 				}
 
 				$html .= "<!--[if IE 9]></video><![endif]-->\n";
-				$html .= "<img src=\"" . $src . "\" alt=\"" . $alt . "\">";
+				$html .= "<img src=\"" . $src . "\" alt=\"" . $alt . "\" " . $args_text . ">";
 				$html .= "</picture>\n";
 			}
 
